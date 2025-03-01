@@ -49,7 +49,7 @@ set_target_properties(math_module PROPERTIES OUTPUT_NAME "Math")
 
 # Compile module object
 add_library(math_obj OBJECT)
-target_sources(math_obj PRIVATE Math.pcm)
+target_sources(math_obj PRIVATE Math.o)
 target_compile_options(math_obj PRIVATE -std=c++20 -c)
 add_dependencies(math_obj math_module)
 
@@ -65,16 +65,11 @@ add_executable(${PROJECT_NAME} main.cpp Math.o)
 target_compile_options(${PROJECT_NAME} PRIVATE  #${FLAGS}
                                                 #${PRECOMPILED_STL}
                                                 #${CUSTOM_MODULES}
-                                                -fprebuilt-module-path=./..
+                                                -fprebuilt-module-path=.
                                                 -fmodules
                                                 )
 
 
-
-
-#set_target_properties(ModulesLib   PROPERTIES
-#                                  CXX_STANDARD 20
-#                                  CXX_STANDARD_REQUIRED ON)
 
 
 
