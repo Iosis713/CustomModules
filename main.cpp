@@ -1,5 +1,5 @@
 import Math;
-#include <iostream>
+import <iostream>;
 
 int main()
 {
