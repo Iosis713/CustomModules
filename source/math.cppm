@@ -1,9 +1,7 @@
+module;
+#include <iostream>
+
 export module Math;
-
-//module;
-//#include <iostream>
-
-//export module Math;
 
 export int add(const int first, const int second)
 {
@@ -15,7 +13,7 @@ export int rem(const int first, const int second)
     return first - second;
 }
 
-/*
+
 export void print(const std::string& str)
 {
     std::cout << str << '\n';
@@ -37,4 +35,4 @@ public:
         std::cout << str << '\n';
     }
 };
-*/
+
