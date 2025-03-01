@@ -1,10 +1,8 @@
 cmake_minimum_required (VERSION 3.26)
-project (CustomModules LANGUAGES CXX) #excplicitly specified for which language cmake shall work
+project (CustomModules)
 
-set (CMAKE_CXX_COMPILER clang++-18)
-set (CMAKE_CXX_EXTENSIONS OFF) #uses -std=c++XX instead of -std=gnu++XX
-set (CMAKE_CXX_SCAN_FOR_MODULES ON)
-set(CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS "/usr/bin/clang-scan-deps-18")
+set(CMAKE_CXX_COMPILER clang++-18)
+set(CMAKE_CXX_EXTENSIONS OFF) #uses -std=c++XX instead of -std=gnu++XX
 
 set (FLAGS  -Wno-experimental-header-units
             -fmodules
@@ -13,25 +11,30 @@ set (FLAGS  -Wno-experimental-header-units
             -Wextra
             -Wpedantic)
 
-#probably could be also in some system files, instead of project files
 set (PRECOMPILED_STL -fmodule-file=../source/iostream.pcm)
+set (CUSTOM_MODULES     -fprebuilt-module-path=${CMAKE_BINARY_DIR})
 
-add_library (MathModule STATIC)
-target_compile_features (MathModule PUBLIC cxx_std_20)
-target_sources (MathModule PUBLIC FILE_SET modules TYPE CXX_MODULES FILES source/math.cppm)
+add_custom_command(
+    OUTPUT ${CMAKE_BINARY_DIR}/Math.pcm
+    COMMAND ${CMAKE_CXX_COMPILER} -std=c++20 ${FLAGS} ${PRECOMPILED_STL} -x c++-module ../source/math.cppm --precompile -o Math.pcm
+    DEPENDS ${CMAKE_BINARY_DIR}/../source/math.cppm
+    COMMENT "Precompiling module math.cppm -> Math.pcm"
+)
 
-add_executable(${PROJECT_NAME} main.cpp)
-target_link_libraries (${PROJECT_NAME} PRIVATE MathModule)
+add_custom_command(
+    OUTPUT  ${CMAKE_BINARY_DIR}/Math.o
+    COMMAND ${CMAKE_CXX_COMPILER} -c ${CMAKE_BINARY_DIR}/Math.pcm -o ${CMAKE_BINARY_DIR}/Math.o
+    DEPENDS ${CMAKE_BINARY_DIR}/Math.pcm
+    COMMENT "Compiling module object Math.pcm -> Math.o"
+)
 
-target_compile_options (MathModule PRIVATE ${FLAGS}
-                                           ${PRECOMPILED_STL})
+add_executable(${PROJECT_NAME} main.cpp Math.o)
 
 target_compile_options(${PROJECT_NAME} PRIVATE  ${FLAGS}
-                                                ${PRECOMPILED_STL})
+                                                ${PRECOMPILED_STL}
+                                                ${CUSTOM_MODULES}
+                                                )
 
-set_target_properties(MathModule   PROPERTIES
-                                   CXX_STANDARD 20
-                                   CXX_STANDARD_REQUIRED ON)
 
 set_target_properties(${PROJECT_NAME}   PROPERTIES
                                         CXX_STANDARD 20
