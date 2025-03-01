@@ -15,8 +15,6 @@ set (FLAGS  -Wno-experimental-header-units
             -Wpedantic
         )
 
-set (CMAKE_CXX_COMPILER "/usr/bin/clang++-18")
-
 #set (PRECOMPILED_STL   -fmodule-file=../source/iostream.pcm)
 set (CUSTOM_MODULES     -fprebuilt-module-path=../source)
 
@@ -38,30 +36,7 @@ add_custom_command(
 
 ####TEST
 
-
-#add_library(ModulesLib ${CUSTOM_MODULES})
-
-#Add module library
-add_library(math_module OBJECT)
-target_sources(math_module PRIVATE source/math.cppm)
-target_compile_options(math_module PRIVATE -x c++-module --precompile)
-set_target_properties(math_module PROPERTIES OUTPUT_NAME "Math")
-
-# Compile module object
-add_library(math_obj OBJECT)
-target_sources(math_obj PRIVATE Math.o)
-target_compile_options(math_obj PRIVATE -std=c++20 -c)
-add_dependencies(math_obj math_module)
-
-
 add_executable(${PROJECT_NAME} main.cpp Math.o)
-#target_link_libraries(${PROJECT_NAME} PRIVATE math_obj)
-
-
-#target_link_libraries(${PROJECT_NAME}   PRIVATE ModulesLib)
-#target_compile_options(ModulesLib PRIVATE ${FLAGS})
-
-
 target_compile_options(${PROJECT_NAME} PRIVATE  #${FLAGS}
                                                 #${PRECOMPILED_STL}
                                                 #${CUSTOM_MODULES}
